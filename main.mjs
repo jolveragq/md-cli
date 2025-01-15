@@ -141,4 +141,32 @@ program
     }
   });
 
+program
+  .command('generate-message')
+  .description('Generate a message with RAMA, PR, and JIRA')
+  .action(() => {
+    try {
+      // Obtener la rama actual
+      const branch = shell.exec('git rev-parse --abbrev-ref HEAD', { silent: true }).stdout.trim();
+
+      // Obtener el PR asociado
+      const prNumber = shell.exec(`gh pr list --head ${branch} --json number --jq '.[0].number'`, { silent: true }).stdout.trim();
+
+      // Obtener el ID de JIRA
+      const jiraIdMatch = branch.match(/[A-Z]+-[0-9]+/);
+      const jiraId = jiraIdMatch ? jiraIdMatch[0] : 'No JIRA ID found';
+
+      // URLs base
+      const prUrl = `https://github.com/inditex/web-duttinodefront/pull/${prNumber}`;
+      const jiraUrl = `https://jira.inditex.com/jira/browse/${jiraId}`;
+
+      // Mostrar el mensaje
+      console.log(chalk.green(`RAMA: ${branch}`));
+      console.log(chalk.green(`PR: ${prUrl}`));
+      console.log(chalk.green(`JIRA: ${jiraUrl}`));
+    } catch (error) {
+      console.error(chalk.red('Failed to generate the message. Ensure you are on a valid branch and logged in to GitHub CLI.'), error);
+    }
+  });
+
 program.parse(process.argv);
