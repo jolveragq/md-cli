@@ -142,7 +142,7 @@ program
   });
 
 program
-  .command('generate-message')
+  .command('message')
   .description('Generate a message with RAMA, PR, and JIRA')
   .action(() => {
     try {
